@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed -e '/<ca>/r keys/ca.crt' -e '/<cert>/r keys/client.crt' -e '/<key>/r keys/client.key' client.ovpn.tpl > client.ovpn

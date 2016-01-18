@@ -1,0 +1,2 @@
+pi ansible_host=raspberrypi.lan
+pi2 ansible_host=raspberrypi2.lan

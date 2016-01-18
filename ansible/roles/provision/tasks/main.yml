@@ -1,0 +1,14 @@
+---
+- name: Upgrade packages
+  apt: upgrade=full update_cache=yes cache_valid_time=3600
+- name: Install Dependencies
+  apt: name={{item}} state=latest
+  with_items:
+    - vim
+    - exfat-fuse
+    - wavemon
+    - openssl
+    - ufw
+- name: Copy sshd config
+  copy: src=sshd_config dest=/etc/ssh/sshd_config
+  notify: Restart SSH

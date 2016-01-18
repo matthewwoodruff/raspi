@@ -1,0 +1,50 @@
+---
+#https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-debian-8
+- name: Install Dependencies
+  apt: name={{ item }} state=latest
+  with_items:
+    - openvpn
+    - easy-rsa
+    - ufw
+- name: Copy config
+  copy: src=server.conf dest=/etc/openvpn/
+- name: Copy config
+  copy: src=sysctl.conf dest=/etc/
+- name: Copy config
+  copy: src=before.rules dest=/etc/ufw/
+- name: UFW config
+  copy: src=ufw dest=/etc/default/
+- name: UFW enable ssh
+  ufw: rule=allow name=ssh state=enabled
+- name: UFW 1194/udp
+  ufw: rule=allow port=1194 proto=udp state=enabled
+- name: DH cert
+  command: openssl dhparam -out /etc/openvpn/dh2048.pem 2048 creates=/etc/openvpn/dh2048.pem
+- name: Copy easy-rsa
+  command: cp -r /usr/share/easy-rsa /tmp/ creates=/tmp/easy-rsa
+- name: Copy vars template
+  template: src=easy-rsa/vars dest=/tmp/easy-rsa/
+- name: Clean all
+  shell: . ./vars && /tmp/easy-rsa/clean-all chdir=/tmp/easy-rsa
+- name: Copy new files
+  copy: src=easy-rsa/ dest=/tmp/easy-rsa/ mode="u+rx"
+- name: Build CA
+  shell: . ./vars && /tmp/easy-rsa/build-ca chdir=/tmp/easy-rsa
+- name: Build server key
+  shell: . ./vars && /tmp/easy-rsa/build-key-server server chdir=/tmp/easy-rsa
+- name: Build client key
+  shell: . ./vars && /tmp/easy-rsa/build-key client chdir=/tmp/easy-rsa
+- name: Build client.ovpn
+  shell: . ./vars && /tmp/easy-rsa/build-client-ovpn chdir=/tmp/easy-rsa
+- name: Copy generated certs
+  copy: src=/tmp/easy-rsa/keys/{{ item }} dest=/etc/openvpn remote_src=true
+  with_items:
+    - server.crt
+    - server.key
+    - ca.crt
+- name: Fetch client.ovpn from remote
+  fetch: src=/tmp/easy-rsa/client.ovpn dest=tmp/ fail_on_missing=yes flat=yes
+- name: Remove temporary directory
+  file: path=/tmp/easy-rsa state=absent
+- name: Start VPN server
+  service: name=openvpn state=restarted
