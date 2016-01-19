@@ -21,30 +21,33 @@
 - name: DH cert
   command: openssl dhparam -out /etc/openvpn/dh2048.pem 2048 creates=/etc/openvpn/dh2048.pem
 - name: Copy easy-rsa
-  command: cp -r /usr/share/easy-rsa /tmp/ creates=/tmp/easy-rsa
-- name: Copy vars template
-  template: src=easy-rsa/vars dest=/tmp/easy-rsa/
-- name: Clean all
-  shell: . ./vars && /tmp/easy-rsa/clean-all chdir=/tmp/easy-rsa
+  command: "cp -r /usr/share/easy-rsa {{easy_rsa_directory}} creates={{easy_rsa_directory}}"
 - name: Copy new files
-  copy: src=easy-rsa/ dest=/tmp/easy-rsa/ mode="u+rx"
+  copy: "src=easy-rsa/ dest={{easy_rsa_directory}}/ mode=u+rx"
+- name: Clean all
+  shell: "{{easy_rsa_directory}}/clean-all chdir={{easy_rsa_directory}}"
+  environment: "{{easy_rsa}}"
 - name: Build CA
-  shell: . ./vars && /tmp/easy-rsa/build-ca chdir=/tmp/easy-rsa
+  shell: "{{easy_rsa_directory}}/build-ca chdir={{easy_rsa_directory}}"
+  environment: "{{easy_rsa}}"
 - name: Build server key
-  shell: . ./vars && /tmp/easy-rsa/build-key-server server chdir=/tmp/easy-rsa
+  shell: "{{easy_rsa_directory}}/build-key-server server chdir={{easy_rsa_directory}}"
+  environment: "{{easy_rsa}}"
 - name: Build client key
-  shell: . ./vars && /tmp/easy-rsa/build-key client chdir=/tmp/easy-rsa
+  shell: "{{easy_rsa_directory}}/build-key client chdir={{easy_rsa_directory}}"
+  environment: "{{easy_rsa}}"
 - name: Build client.ovpn
-  shell: . ./vars && /tmp/easy-rsa/build-client-ovpn chdir=/tmp/easy-rsa
+  shell: "{{easy_rsa_directory}}/build-client-ovpn chdir={{easy_rsa_directory}}"
+  environment: "{{easy_rsa}}"
 - name: Copy generated certs
-  copy: src=/tmp/easy-rsa/keys/{{ item }} dest=/etc/openvpn remote_src=true
+  copy: "src={{easy_rsa_directory}}/keys/{{ item }} dest=/etc/openvpn remote_src=true"
   with_items:
     - server.crt
     - server.key
     - ca.crt
 - name: Fetch client.ovpn from remote
-  fetch: src=/tmp/easy-rsa/client.ovpn dest=tmp/ fail_on_missing=yes flat=yes
+  fetch: "src={{easy_rsa_directory}}/client.ovpn dest=tmp/ fail_on_missing=yes flat=yes"
 - name: Remove temporary directory
-  file: path=/tmp/easy-rsa state=absent
+  file: "path={{easy_rsa_directory}} state=absent"
 - name: Start VPN server
   service: name=openvpn state=restarted
