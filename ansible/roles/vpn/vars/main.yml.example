@@ -1,0 +1,21 @@
+---
+easy_rsa_directory: "/tmp/easy-rsa"
+easy_rsa:
+  EASY_RSA: "{{easy_rsa_directory}}"
+  OPENSSL: "openssl"
+  PKCS11TOOL: "pkcs11-tool"
+  GREP: "grep"
+  KEY_CONFIG: "{{easy_rsa_directory}}/openssl-1.0.0.cnf"
+  KEY_DIR: "{{easy_rsa_directory}}/keys"
+  PKCS11_MODULE_PATH: "dummy"
+  PKCS11_PIN: "dummy"
+  KEY_SIZE: 2048
+  CA_EXPIRE: 3650
+  KEY_EXPIRE: 3650
+  KEY_COUNTRY: "US"
+  KEY_PROVINCE: "CA"
+  KEY_CITY: "SanFrancisco"
+  KEY_ORG: "Fort-Funston"
+  KEY_EMAIL: "me@myhost.mydomain"
+  KEY_OU: "MyOrganizationalUnit"
+  KEY_NAME: "EasyRSA"
