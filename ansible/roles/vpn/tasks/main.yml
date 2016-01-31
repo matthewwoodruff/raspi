@@ -5,7 +5,6 @@
   with_items:
     - openvpn
     - easy-rsa
-    - ufw
 - name: Copy config
   copy: src=server.conf dest=/etc/openvpn/
 - name: Copy config
