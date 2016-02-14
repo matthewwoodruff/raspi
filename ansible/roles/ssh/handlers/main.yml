@@ -1,3 +1,5 @@
 ---
 - name: Restart SSH
   service: name=ssh state=restarted
+- name: Reboot
+  command: /sbin/reboot
