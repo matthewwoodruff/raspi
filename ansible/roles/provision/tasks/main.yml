@@ -9,12 +9,13 @@
     - wavemon
     - openssl
     - ufw
-# - user: "name=pi state=present password={{ password }}"
-- hostname: "name={{hostname}}"
-- name: Copy sshd config
-  copy: src=sshd_config dest=/etc/ssh/sshd_config
-  notify: Restart SSH
-- name: Copy public key
-  authorized_key: user=pi key="{{ item }}" state=present exclusive=yes
-  with_file:
-    - "{{ public_key }}"
+- name: Limit SSH connections
+  ufw: rule=limit name=ssh state=enabled
+- name: Disable all ports
+  ufw: state=enabled policy=deny logging=on
+- name: Expand rootfs
+  command: /usr/bin/raspi-config --expand-rootfs
+  notify: Reboot
+- name: Set new password for pi user
+  user: "name=pi state=present password={{ password | password_hash('sha512') }}"
+  when: password is defined

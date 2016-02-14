@@ -1,0 +1,11 @@
+---
+- name: Copy public key
+  authorized_key: user=pi key="{{ item }}" state=present exclusive=yes
+  with_file:
+    - "{{ public_key }}"
+- name: Copy sshd config
+  copy: src=sshd_config dest=/etc/ssh/sshd_config
+  notify: Restart SSH
+- name: Set hostname
+  hostname: "name={{hostname}}"
+  when: hostname is defined

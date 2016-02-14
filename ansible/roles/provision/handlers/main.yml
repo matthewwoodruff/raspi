@@ -1,3 +1,5 @@
 ---
-- name: Restart SSH
-  service: name=ssh state=restarted
+- name: Reboot
+  command: /sbin/reboot
+- name: Set new password for pi user
+  user: "name=pi state=present password={{ password | password_hash('sha512') }}"
