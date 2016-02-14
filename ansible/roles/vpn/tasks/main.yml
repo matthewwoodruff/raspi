@@ -18,7 +18,7 @@
 - name: UFW 1194/udp
   ufw: rule=allow port=1194 proto=udp state=enabled
 - name: DH cert
-  command: openssl dhparam -out /etc/openvpn/dh2048.pem 2048 creates=/etc/openvpn/dh2048.pem
+  command: openssl dhparam -out /etc/openvpn/dh4096.pem 4096 creates=/etc/openvpn/dh4096.pem
 - name: Copy easy-rsa
   command: "cp -r /usr/share/easy-rsa {{easy_rsa_directory}} creates={{easy_rsa_directory}}"
 - name: Copy new files
