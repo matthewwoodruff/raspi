@@ -45,7 +45,7 @@
     - server.key
     - ca.crt
 - name: Fetch client.ovpn from remote
-  fetch: "src={{easy_rsa_directory}}/client.ovpn dest=tmp/ fail_on_missing=yes flat=yes"
+  fetch: "src={{easy_rsa_directory}}/client.ovpn dest=/tmp/ fail_on_missing=yes flat=yes"
 - name: Remove temporary directory
   file: "path={{easy_rsa_directory}} state=absent"
 - name: Start VPN server

@@ -9,6 +9,7 @@
     - wavemon
     - openssl
     - ufw
+    - htop
 - name: Limit SSH connections
   ufw: rule=limit name=ssh state=enabled
 - name: Disable all ports
