@@ -1,21 +1,8 @@
 ---
-- name: Upgrade packages
-  apt: upgrade=full update_cache=yes cache_valid_time=3600
-- name: Purge old repositories
-  apt: name={{item}} purge=true state=absent
-  with_items:
-    - lxc-docker
-    - docker.io
-- name: Install Dependencies
-  apt: name={{item}} state=present
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-- name: Add apt key
-  apt_key: keyserver="hkp://p80.pool.sks-keyservers.net:80" id="58118E89F3A912897C070ADBF76221572C52609D"
-- name: Install Docker Engine Deb
-  apt_repository: repo='deb https://apt.dockerproject.org/repo debian-jessie main' state=present
-- name: Update cache
-  apt: update_cache=yes
-- name: Install Docker Engine
-  apt: name=docker-engine state=present
+- name: Get Docker install script
+  get_url:
+    url: https://get.docker.com
+    dest: /usr/local/bin/install_docker
+    mode: 0550
+- name: Install/Update docker
+  command: install_docker
